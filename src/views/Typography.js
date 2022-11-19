@@ -19,6 +19,16 @@ const generateCode = (apiKey)=>{
     border="0" 
     cellspacing="0"
     ></iframe>
+
+    <script>
+      function OnSBTAuthSuccess(){
+        //Implement success case here
+      }
+      
+      function OnSBTAuthError(){
+        //Implement success case here
+      }
+    </script>
   `
 }
 
@@ -50,13 +60,16 @@ function Typography() {
 
   const [projects, setProjects] = useState([]);
   const [selected, setSelected] = useState({});
-  const [code, setCode] = useState('');
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     fetch('https://backoffice-soul-token.herokuapp.com/projects', REQUEST_OPTIONS)
     .then(response => response.json())
     .then(data => setProjects(data.projects))
-    .then(()=>setSelected(projects[0]));
+    .then(()=>{
+      setSelected(projects[0]);
+      setLoaded(true)
+    });
     
   }, []);
 
@@ -72,45 +85,51 @@ function Typography() {
       <Container fluid>
         <Row>
           <Col md="12">
-            <Card>
-              <Card.Header>
-                <Card.Title as="h4">Code Snippet</Card.Title>
-                <p className="card-category mb-3" >
-                  Add this code to your project's login page. You can modify the behaviour with the data from the authentication by editing the functions OnSBTAuthSuccess and OnSBTAuthError
-                </p>
-                <Dropdown onSelect={(e)=>selectProject(e)} >
-                  <Dropdown.Toggle id="dropdown-basic">
-                    {selected ? selected.name : 'Select Project'}
-                  </Dropdown.Toggle>
+            
+            {
+              loaded && 
+              <Card>
+                <Card.Header>
+                  <Card.Title as="h4">Code Snippet</Card.Title>
+                  <p className="card-category mb-3" >
+                    Add this code to your project's login page. You can modify the behaviour with the data from the authentication by editing the functions OnSBTAuthSuccess and OnSBTAuthError
+                  </p>
+                  <Dropdown onSelect={(e)=>selectProject(e)} >
+                    <Dropdown.Toggle id="dropdown-basic">
+                      {selected ? selected.name : 'Select Project'}
+                    </Dropdown.Toggle>
 
-                  <Dropdown.Menu>
+                    <Dropdown.Menu>
+                      {
+                        projects?.map(({
+                          name,
+                          apiKey
+                        })=><Dropdown.Item key={apiKey} href={`#${name}-${apiKey}`}>{name}</Dropdown.Item>)
+                      }
+                    </Dropdown.Menu>
+                  </Dropdown>
+
+                </Card.Header>
+                <Card.Body>
                     {
-                      projects?.map(({
-                        name,
-                        apiKey
-                      })=><Dropdown.Item key={apiKey} href={`#${name}-${apiKey}`}>{name}</Dropdown.Item>)
+                      selected && 
+                      <div class="code-box">
+                          {generateCode(selected?.apiKey)}
+                      </div>
                     }
-                  </Dropdown.Menu>
-                </Dropdown>
+                </Card.Body>
+              </Card>
+            }
 
-              </Card.Header>
-              <Card.Body>
-                  {
-                    selected && 
-                    <div class="code-box">
-                        {generateCode(selected?.apiKey)}
-                    </div>
-                  }
-              </Card.Body>
-            </Card>
-              <iframe 
+
+              {/* <iframe 
                 src="http://localhost:3000/?apiKey=4zEAr2ignaOFBj7zbS2c9UEZ1uvugt" 
                 title="W3Schools Free Online Web Tutorials"
                 id="SBT"
                 frameborder="0" 
                 border="0" 
                 cellspacing="0"
-              ></iframe>
+              ></iframe> */}
           </Col>
         </Row>
       </Container>

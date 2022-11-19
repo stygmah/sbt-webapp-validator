@@ -1,3 +1,4 @@
+import AddProjectModal from "components/AddProject";
 import EditModal from "components/EditModal";
 import React, { useEffect, useState } from "react";
 
@@ -26,21 +27,21 @@ function truncate(str, n){
 function TableList() {
   const [projects, setProjects] = useState([]);
 
-  useEffect(() => {
+  const getProjects = ()=>{
     fetch('https://backoffice-soul-token.herokuapp.com/projects', REQUEST_OPTIONS)
     .then(response => response.json())
     .then(data => setProjects(data.projects));
-    
+  }
+  useEffect(() => {
+    getProjects();
   }, []);
 
-  const clickAddProject = ()=> {
 
-  };
 
   return (
     <>
       <Container fluid>
-        <Button className="add-project" onClick={clickAddProject}>Add Project</Button>
+        <AddProjectModal/>
         <Row>
           <Col md="12">
             <Card className="strpied-tabled-with-hover">
@@ -77,6 +78,7 @@ function TableList() {
                                   description={description}
                                   apiKey={apiKey}
                                   tokens={tokens}
+                                  reload={getProjects}
                               /> 
                             </td>
                           </tr>)

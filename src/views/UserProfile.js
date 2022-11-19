@@ -30,7 +30,7 @@ function User() {
                       <Form.Group>
                         <label>Company (disabled)</label>
                         <Form.Control
-                          defaultValue="Creative Code Inc."
+                          defaultValue="."
                           disabled
                           placeholder="Company"
                           type="text"
